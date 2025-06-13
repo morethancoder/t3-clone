@@ -1,0 +1,534 @@
+package pages
+
+import (
+"fmt"
+"morethancoder/t3-clone/views/components"
+"os"
+)
+
+templ HomePage() {
+<div class="h-full w-full min-h-screen ">
+    @HistoryBar()
+    @ActionBar()
+    @PromptBar()
+    @MainSection()
+</div>
+if os.Getenv("ENV") == "dev" {
+@components.RefreshOnContent()
+}
+}
+
+templ MainSection() {
+<section class="flex flex-col gap-4 w-full mx-auto max-w-4xl 
+    items-center justify-end h-full min-h-screen px-8 sm:px-16 pb-32 ">
+    <!--@Chat()-->
+    @Starter()
+</section>
+}
+
+templ Starter() {
+<div
+data-class="{ 'opacity-100' : true }"
+class="w-full opacity-0 transition-all duration-1000">
+    <div class="chat chat-start mb-2">
+        <div class="chat-image avatar">
+            @components.LogoGemini("size-8 text-accent animate-pulse glow")
+        </div>
+        <div data-signals_model-name-hover="false" class="chat-header p-1">
+            <div class="dropdown transition-all duration-300"
+            data-on-mouseenter="$_modelNameHover=true"
+            data-on-mouseleave="$_modelNameHover=false"
+            data-class="{ 'dropdown-open' : $_modelNameHover }"
+            >
+                <div  class=" flex items-center justify-between 
+                        cursor-pointer m-1 gap-1">
+                    Gemini 2.5 Pro
+                    @components.IconChevronDown("size-4")
+                </div>
+                <ul tabindex="5" class="dropdown-content menu bg-base-100 rounded-xl
+                        border border-base-300
+                        z-1 w-52 p-2 shadow-sm">
+                    <li>
+                        <a>
+                            @components.LogoGemini("size-4")
+                            Gemini 2.5 Flash
+                        </a>
+                    </li>
+                    <li>
+                        <a>
+                            @components.LogoGPT("size-4")
+                            ChatGPT 4o
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="chat-bubble">
+        <span data-text="new Date().getHours() >= 5 && new Date().getHours() < 12 ? 'Good Morning!' : 'Good Evening!'">Good Morning! </span>
+        How can I help you!</div>
+    </div>
+    <div class="sm:grid grid-cols-1 sm:grid-cols-2 gap-2 p-2 hidden">
+        @StarterCard(components.IconSearch("size-5"),
+        "What are the latest trends in AI?")
+        @StarterCard(components.IconGrad("size-5"),
+        "Tell me the most important 20% of crypto so that I understand 80% of it.")
+        @StarterCard(components.IconCode("size-5"),
+        "Write a Python script to convert a CSV file to a JSON file.")
+        @StarterCard(components.IconPlane("size-5"),
+        "What are the must-see attractions in Japan?")
+    </div>
+    <div class="flex gap-4 p-2 justify-end">
+        <div class="tooltip tooltip-sm tooltip-bottom tooltip-accent" data-tip="Change Model">
+            <button class="btn btn-soft btn-accent btn-circle">
+                @components.IconChange("size-5")
+            </button>
+        </div>
+        <div class="tooltip tooltip-sm tooltip-bottom tooltip-accent" data-tip="Change Mood">
+            <button class="btn btn-soft btn-accent btn-circle">
+                @components.IconLaugh("size-5")
+            </button>
+        </div>
+        <div class="tooltip tooltip-sm tooltip-bottom tooltip-accent" data-tip="Pre-Prompt">
+            <button class="btn  btn-soft btn-accent btn-circle">
+                @components.IconPenTool("size-5")
+            </button>
+        </div>
+        <div class="tooltip tooltip-sm tooltip-bottom tooltip-accent" data-tip="Daily Read">
+            <button class="btn btn-soft btn-accent btn-circle">
+                @components.IconNewspaper("size-5")
+            </button>
+        </div>
+        <div class="tooltip tooltip-sm tooltip-bottom tooltip-accent" data-tip="Summerize">
+            <button class="btn  btn-soft btn-accent btn-circle">
+                @components.IconList("size-5")
+            </button>
+        </div>
+    </div>
+</div>
+}
+
+templ StarterCard(icon templ.Component, text string) {
+<div class="card w-full min-h-40 bg-base-300 card-lg shadow-sm cursor-pointer
+    hover:bg-accent hover:text-accent-content hover:transform hover:-translate-y-1 transition-all duration-300">
+    <div class="card-body gap-4">
+        @icon
+        <p>{ text }</p>
+        <div class="card-actions absolute top-6 end-6">
+            <button class="btn btn-soft btn-circle">
+                @components.IconArrowUp("size-5")
+            </button>
+        </div>
+    </div>
+</div>
+}
+
+templ Chat() {
+<div class="w-full">
+    <div class="chat chat-start">
+        <div class="chat-image avatar">
+            @components.LogoGemini("size-8 text-accent animate-pulse glow")
+        </div>
+        <div class="chat-header">
+            Gemini 2.5 Pro
+            <time class="text-xs opacity-50">12:45</time>
+        </div>
+        <div class="chat-bubble">How can I help you!</div>
+        <div class="chat-footer opacity-50">Delivered</div>
+    </div>
+    <div class="chat chat-end">
+        <div class="chat-header">
+            <time class="text-xs opacity-50">2 hour ago</time>
+        </div>
+        <div class="chat-bubble chat-bubble-primary">
+            Tell me the most important 20% of crypto so that I understand 80%
+            of it.
+        </div>
+        <div class="chat-footer opacity-50">Delivered</div>
+    </div>
+</div>
+}
+
+templ HistoryBar() {
+<section class="fixed z-10 left-0 flex flex-col 
+items-start justify-start h-full gap-4
+p-4
+    ">
+    <div class="tooltip tooltip-right tooltip-sm" data-tip="New Chat">
+        <button class="btn btn-neutral btn-circle">
+            @components.IconSquarePen("size-5")
+        </button>
+    </div>
+    @SlideCard(SlideCardData{
+        dir: "left",
+        id: "history",
+        title: "History",
+        icon: components.IconHistory("size-5"),
+        content: History(),
+        })
+    @SlideCard(SlideCardData{
+        dir: "left",
+        id: "bookmarks",
+        title: "Bookmarks",
+        icon: components.IconBookmark("size-5"),
+        content: Bookmarks(),
+    })
+</section>
+}
+
+templ Bookmarks() {
+<h2 class="text-lg font-bold">Bookmarks</h2>
+<label class="input ">
+  @components.IconSearch("size-4")
+  <input tabindex="-1"  type="search" class="grow" placeholder="Search" />
+</label>
+<ul tabindex="-1" class="list shadow-md min-w-64 max-h-[65vh] overflow-y-scroll
+space-y-2 px-1">
+    <li class="pb-2 text-xs opacity-60 tracking-wide">Yesterday</li>
+    @HistoryItem("Hello")
+</ul>
+
+}
+
+templ History() {
+<h2 class="text-lg font-bold">History</h2>
+<label class="input ">
+  @components.IconSearch("size-4")
+  <input tabindex="-1"  type="search" class="grow" placeholder="Search" />
+</label>
+<ul tabindex="-1" class="list shadow-md min-w-72 max-h-[65vh] overflow-y-scroll
+space-y-2 px-1">
+    <li class="pb-2 text-xs opacity-60 tracking-wide">Yesterday</li>
+    @HistoryItem("AI is the future")
+    @HistoryItem("AI is Actual Indians")
+    @HistoryItem("Work Hard Play Hard")
+    @HistoryItem("Stay Focused")
+    @HistoryItem("How to be a good human, why my brain is not working, and how to fix it")
+    @HistoryItem("AI is the future")
+    @HistoryItem("AI is Actual Indians")
+    @HistoryItem("Work Hard Play Hard")
+    @HistoryItem("Stay Focused")
+    @HistoryItem("How to be a good human")
+    @HistoryItem("AI is the future")
+    @HistoryItem("AI is Actual Indians")
+    @HistoryItem("Work Hard Play Hard")
+    @HistoryItem("Stay Focused")
+    @HistoryItem("How to be a good human")
+    @HistoryItem("AI is Actual Indians")
+    @HistoryItem("Work Hard Play Hard")
+    @HistoryItem("Stay Focused")
+    @HistoryItem("How to be a good human")
+
+</ul>
+}
+
+templ HistoryItem(text string) {
+    <li
+    class="list-row h-12 flex-shrink-0 cursor-pointer bg-neutral/5 hover:bg-neutral/10 rounded-lg
+    flex justify-between items-center relative group overflow-hidden mx-0">
+        <a class="max-w-48 truncate">
+        { text }
+        </a>
+        <div 
+        class="flex gap-1 absolute top-1/2 transform transition-all duration-300
+        opacity-0 group-hover:opacity-100 translate-x-[100%]
+        group-hover:translate-x-0
+        -translate-y-1/2 right-2">
+        <button tabindex="-1" class="btn-ghost btn btn-sm btn-circle btn-neutral">
+        @components.IconPin("size-4")
+        </button>
+        <button tabindex="-1" class="btn-ghost btn btn-sm btn-circle btn-neutral">
+        @components.IconX("size-4")
+        </button>
+        </div>
+
+    </li>
+}
+
+type SlideCardData struct {
+    id, title, dir string
+    icon templ.Component
+    content templ.Component
+}
+
+templ SlideCard(data SlideCardData) {
+<div  
+data-signals={ fmt.Sprintf("{_%[1]sClick: false, _%[1]sHover: false}", data.id) } 
+data-on-click__outside={
+    fmt.Sprintf("$_%sClick=false", data.id) } class="relative">
+    <div 
+            data-class={ fmt.Sprintf(` { 
+            'opacity-0 translate-y-[-100%%]' : ($_%[1]sClick||$_%[1]sHover), 
+            'opacity-100 translate-y-0' : (!$_%[1]sClick && !$_%[1]sHover)
+            }`, data.id) } 
+
+    if data.dir == "left" {
+        class="tooltip tooltip-right tooltip-sm transition-all duration-100"
+
+    } else {
+        class="tooltip tooltip-left tooltip-sm transition-all duration-100"
+    }
+
+    data-tip={ data.title }>
+        <button data-on-mouseenter={ fmt.Sprintf("$_%sHover=true", data.id) } data-on-mouseleave={
+            fmt.Sprintf("$_%sHover=false", data.id) } data-on-keydown__passive={ 
+                fmt.Sprintf("evt.key === 'Enter' ? $_%[1]sClick=!$_%[1]sClick : ''", data.id) }
+
+            data-class={ fmt.Sprintf(` { 
+            'opacity-0 translate-y-[-100%%]' : ($_%[1]sClick||$_%[1]sHover), 
+            'opacity-100 translate-y-0' : (!$_%[1]sClick && !$_%[1]sHover)
+            }`, data.id) } 
+
+            class="btn btn-neutral btn-soft btn-circle transition-all duration-300 
+        ">
+            @data.icon
+        </button>
+    </div>
+    <div 
+        data-on-mouseenter={ fmt.Sprintf("$_%sHover=true", data.id) } 
+        data-on-mouseleave={ fmt.Sprintf("$_%sHover=false",data.id) } 
+
+
+
+        if data.dir == "left" {
+        
+        data-class={ fmt.Sprintf(` { 
+            'opacity-100 translate-x-0' : ($_%[1]sClick||$_%[1]sHover), 
+            'opacity-0 translate-x-[-100%%]' : (!$_%[1]sClick && !$_%[1]sHover)
+            }`, data.id) } 
+            
+        class="card card-md bg-base-100/50 backdrop-blur  
+        border-1 border-base-content/10
+    shadow-sm shadow-base-content/20
+    rounded-2xl z-10
+    absolute top-0 left-0 
+    transition-all duration-300 translate-x-[-100%]
+    opacity-0
+    transform"
+        } else {
+            data-class={ fmt.Sprintf(` { 
+            'opacity-100 translate-x-0' : ($_%[1]sClick||$_%[1]sHover), 
+            'opacity-0 translate-x-[100%%]' : (!$_%[1]sClick && !$_%[1]sHover)
+            }`, data.id) } 
+
+            class="card card-md bg-base-100/50 backdrop-blur  
+            border-1 border-base-content/10
+        shadow-sm shadow-base-content/20
+        rounded-2xl z-10
+        absolute top-0 right-0 
+        transition-all duration-300 translate-x-[100%]
+        opacity-0
+        transform"
+        }
+
+    >
+        <div class="card-body">
+            @data.content
+        </div>
+    </div>
+</div>
+}
+
+templ Settings() {
+<div class="min-w-64">settings</div>
+}
+
+templ Theme() {
+<div class="min-w-64">Theme</div>
+}
+
+templ Keybinds() {
+<div class="min-w-64">Keybinds</div>
+}
+
+
+type ModelCardData struct {
+    id string
+    name string
+    logo templ.Component
+    badges []templ.Component
+}
+templ ModelCard(data ModelCardData) {
+    <div class="card w-56 aspect-[3/2] bg-accent/10 shadow-sm">
+        <div class="card-body">
+            <!--Name-->
+            <h3 class="card-title">{ data.name }</h3>
+           <!-- Logo --> 
+           <div class="absolute top-6 right-6">
+            @data.logo
+           </div>
+           <!--Badges -->
+           <div class="absolute bottom-6 end-6">
+            <ul >
+                for _,badge := range data.badges {
+                    <li>
+                        @badge
+                    </li>
+                }
+            </ul>
+           </div>
+        </div>
+    </div>
+}
+
+//--Badge-- 
+//TODO: Move to components
+type Color string
+
+const (
+    ColorPrimary Color = "primary"
+    ColorSecondary Color = "secondary"
+    ColorAccent Color = "accent"
+    ColorNeutral Color = "neutral"
+    ColorInfo Color = "info"
+    ColorSuccess Color = "success"
+    ColorWarning Color = "warning"
+    ColorError Color = "error"
+)
+
+type BadgeData struct {
+    text string
+    icon templ.Component
+    color Color
+}
+
+templ Badge(data BadgeData) {
+    <div class="tooltip tooltip-bottom" data-tip={ data.text}>
+
+    <div 
+    if data.color == ColorPrimary {
+        class=" h-8 w-8 bg-primary-content text-primary rounded-full flex items-center justify-center"
+    } else if data.color == ColorSecondary {
+        class=" h-8 w-8 bg-secondary-content text-secondary rounded-full flex items-center justify-center"
+    } else if data.color == ColorAccent {
+        class=" h-8 w-8 bg-accent-content text-accent rounded-full flex items-center justify-center"
+    } else if data.color == ColorNeutral {
+        class=" h-8 w-8 bg-neutral-content text-neutral rounded-full flex items-center justify-center"
+    } else if data.color == ColorInfo {
+        class=" h-8 w-8 bg-info-content text-info rounded-full flex items-center justify-center"
+    } else if data.color == ColorSuccess {
+        class=" h-8 w-8 bg-success-content text-success rounded-full flex items-center justify-center"
+    } else if data.color == ColorWarning {
+        class=" h-8 w-8 bg-warning-content text-warning rounded-full flex items-center justify-center"
+    } else if data.color == ColorError {
+        class=" h-8 w-8 bg-error-content text-error rounded-full flex items-center justify-center"
+    }
+    >
+        @data.icon
+    </div>
+    </div>
+
+}
+//End --Badge--
+
+templ Models() {
+<h2 class="text-lg font-bold">Models</h2>
+<label class="input ">
+  @components.IconSearch("size-4")
+  <input tabindex="-1"  type="search" class="grow" placeholder="Search" />
+</label>
+<ul tabindex="-1" class="min-w-72 h-full max-h-96 overflow-y-scroll
+space-y-2 px-1 grid grid-cols-1 sm:grid-cols-3">
+    @ModelCard(ModelCardData{
+        id: "235d",
+        name: "GPT-4o",
+        logo: components.LogoGPT("size-7"),
+        badges: []templ.Component{
+            Badge(BadgeData{
+                text: "Vision", 
+                icon: components.IconEye("size-4"), 
+                color: ColorPrimary}),
+        },
+    })
+</ul>
+
+}
+
+
+templ ActionBar() {
+<section class="fixed z-10 right-0 flex flex-col gap-4
+        items-end justify-start h-full p-4
+    ">
+    <div class="tooltip tooltip-sm tooltip-left" data-tip="Mute">
+        <button class="btn btn-neutral btn-circle">
+            @components.IconSpeaker("size-5")
+        </button>
+    </div>
+    @SlideCard(SlideCardData{
+        dir: "right",
+        id: "settings",
+        title: "Settings",
+        icon: components.IconSettings("size-5"),
+        content: Settings(),
+        })
+
+    @SlideCard(SlideCardData{
+        dir: "right",
+        id: "theme",
+        title: "Theme",
+        icon: components.IconPaintRoller("size-5"),
+        content: Theme(),
+        })
+
+    @SlideCard(SlideCardData{
+        dir: "right",
+        id: "keybinds",
+        title: "Keybinds",
+        icon: components.IconKeyboard("size-5"),
+        content: Keybinds(),
+        })
+
+    @SlideCard(SlideCardData{
+        dir: "right",
+        id: "models",
+        title: "Models",
+        icon: components.IconCPU("size-5"),
+        content: Models(),
+        })
+
+</section>
+}
+
+templ PromptBar() {
+<section 
+data-class="{ 'opacity-100' : true }"
+class="fixed z-50 bottom-0 start-0 flex gap-2 sm:gap-3 items-center justify-center w-full 
+    bg-base-100/0 backdrop-blur p-4 sm:p-6 shadow-md shadow-base-content
+    transition-all duration-500 opacity-0
+    ">
+    <!-- Attach file -->
+    <div class="tooltip tooltip-sm tooltip-accent" data-tip="Attach File">
+        <!-- styles secondary if active -->
+        <button class="btn btn-accent btn-circle btn-soft">
+            @components.IconPaperclip("size-5")
+        </button>
+    </div>
+    <!-- Reasoning -->
+    <div class="tooltip tooltip-sm tooltip-accent" data-tip="Reasoning">
+        <!-- styles secondary if active -->
+        <button class="btn btn-accent btn-circle btn-soft ">
+            @components.IconBrain("size-5")
+        </button>
+    </div>
+    <!-- Web Search -->
+    <div class="tooltip tooltip-sm tooltip-accent" data-tip="Web Search">
+        <!-- styles secondary if active -->
+        <button class="btn btn-accent btn-circle btn-soft">
+            @components.IconWeb("size-5")
+        </button>
+    </div>
+    <!-- Prompt -->
+        <textarea 
+        tabindex="1"
+        data-on-input="
+        evt.target.style.height = 0 + 'px'; 
+        evt.target.style.height =  evt.target.scrollHeight + 'px';"
+        class="textarea  resize-none min-w-40 sm:min-w-72 w-full max-h-52 min-h-10 h-10
+        max-w-lg"  placeholder="Type here"></textarea>
+    <!-- Send Prompt -->
+    <div class="tooltip tooltip-sm tooltip-primary" data-tip="Send Prompt">
+        <button class="btn btn-primary btn-circle">
+            @components.IconArrowUp("size-5")
+        </button>
+    </div>
+</section>
+}

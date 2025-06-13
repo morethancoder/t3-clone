@@ -1,0 +1,8 @@
+package components
+
+templ RefreshOnContent() {
+	<div
+		data-on-load="@get('/hotreload', {retryInterval: 50})"
+	>
+	</div>
+}
