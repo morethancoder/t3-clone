@@ -3,3 +3,4 @@ go.sum
 
 tailwindcss
 pocketbase
+pb_data/
