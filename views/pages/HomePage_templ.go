@@ -11,7 +11,6 @@ import templruntime "github.com/a-h/templ/runtime"
 import (
 	"fmt"
 	"morethancoder/t3-clone/views/components"
-	"os"
 )
 
 func HomePage() templ.Component {
@@ -51,7 +50,7 @@ func HomePage() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = MainSection().Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = MainSection(Starter()).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -59,17 +58,11 @@ func HomePage() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		if os.Getenv("ENV") == "dev" {
-			templ_7745c5c3_Err = components.RefreshOnContent().Render(ctx, templ_7745c5c3_Buffer)
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-		}
 		return nil
 	})
 }
 
-func MainSection() templ.Component {
+func MainSection(content templ.Component) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -90,11 +83,11 @@ func MainSection() templ.Component {
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<section class=\"flex flex-col gap-4 w-full mx-auto max-w-4xl \n    items-center justify-end h-full min-h-screen px-8 sm:px-16 pb-32 \"><!--@Chat()-->")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<section class=\"flex flex-col gap-4 w-full mx-auto max-w-4xl \n    items-center justify-end h-full min-h-screen px-8 sm:px-16 pb-32 \">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = Starter().Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = content.Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -267,7 +260,7 @@ func StarterCard(icon templ.Component, text string) templ.Component {
 		var templ_7745c5c3_Var5 string
 		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(text)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/pages/HomePage.templ`, Line: 115, Col: 17}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/pages/HomePage.templ`, Line: 113, Col: 17}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 		if templ_7745c5c3_Err != nil {
@@ -577,7 +570,7 @@ func HistoryItem(text string) templ.Component {
 		var templ_7745c5c3_Var11 string
 		templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(text)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/pages/HomePage.templ`, Line: 229, Col: 14}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/pages/HomePage.templ`, Line: 227, Col: 14}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 		if templ_7745c5c3_Err != nil {
@@ -641,7 +634,7 @@ func SlideCard(data SlideCardData) templ.Component {
 		var templ_7745c5c3_Var13 string
 		templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("{_%[1]sClick: false, _%[1]sHover: false}", data.id))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/pages/HomePage.templ`, Line: 255, Col: 79}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/pages/HomePage.templ`, Line: 253, Col: 79}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 		if templ_7745c5c3_Err != nil {
@@ -655,7 +648,7 @@ func SlideCard(data SlideCardData) templ.Component {
 		templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(
 			fmt.Sprintf("$_%sClick=false", data.id))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/pages/HomePage.templ`, Line: 257, Col: 43}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/pages/HomePage.templ`, Line: 255, Col: 43}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 		if templ_7745c5c3_Err != nil {
@@ -671,7 +664,7 @@ func SlideCard(data SlideCardData) templ.Component {
             'opacity-100 translate-y-0' : (!$_%[1]sClick && !$_%[1]sHover)
             }`, data.id))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/pages/HomePage.templ`, Line: 262, Col: 24}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/pages/HomePage.templ`, Line: 260, Col: 24}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 		if templ_7745c5c3_Err != nil {
@@ -699,7 +692,7 @@ func SlideCard(data SlideCardData) templ.Component {
 		var templ_7745c5c3_Var16 string
 		templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(data.title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/pages/HomePage.templ`, Line: 271, Col: 25}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/pages/HomePage.templ`, Line: 269, Col: 25}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 		if templ_7745c5c3_Err != nil {
@@ -712,7 +705,7 @@ func SlideCard(data SlideCardData) templ.Component {
 		var templ_7745c5c3_Var17 string
 		templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("$_%sHover=true", data.id))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/pages/HomePage.templ`, Line: 272, Col: 75}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/pages/HomePage.templ`, Line: 270, Col: 75}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
 		if templ_7745c5c3_Err != nil {
@@ -726,7 +719,7 @@ func SlideCard(data SlideCardData) templ.Component {
 		templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.JoinStringErrs(
 			fmt.Sprintf("$_%sHover=false", data.id))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/pages/HomePage.templ`, Line: 273, Col: 51}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/pages/HomePage.templ`, Line: 271, Col: 51}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var18))
 		if templ_7745c5c3_Err != nil {
@@ -740,7 +733,7 @@ func SlideCard(data SlideCardData) templ.Component {
 		templ_7745c5c3_Var19, templ_7745c5c3_Err = templ.JoinStringErrs(
 			fmt.Sprintf("evt.key === 'Enter' ? $_%[1]sClick=!$_%[1]sClick : ''", data.id))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/pages/HomePage.templ`, Line: 274, Col: 93}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/pages/HomePage.templ`, Line: 272, Col: 93}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var19))
 		if templ_7745c5c3_Err != nil {
@@ -756,7 +749,7 @@ func SlideCard(data SlideCardData) templ.Component {
             'opacity-100 translate-y-0' : (!$_%[1]sClick && !$_%[1]sHover)
             }`, data.id))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/pages/HomePage.templ`, Line: 279, Col: 24}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/pages/HomePage.templ`, Line: 277, Col: 24}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var20))
 		if templ_7745c5c3_Err != nil {
@@ -777,7 +770,7 @@ func SlideCard(data SlideCardData) templ.Component {
 		var templ_7745c5c3_Var21 string
 		templ_7745c5c3_Var21, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("$_%sHover=true", data.id))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/pages/HomePage.templ`, Line: 287, Col: 67}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/pages/HomePage.templ`, Line: 285, Col: 67}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var21))
 		if templ_7745c5c3_Err != nil {
@@ -788,9 +781,9 @@ func SlideCard(data SlideCardData) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var22 string
-		templ_7745c5c3_Var22, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("$_%sHover=false", data.id))
+		templ_7745c5c3_Var22, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("setTimeout(() => {$_%sHover=false}, 300)", data.id))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/pages/HomePage.templ`, Line: 288, Col: 67}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/pages/HomePage.templ`, Line: 286, Col: 92}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var22))
 		if templ_7745c5c3_Err != nil {
@@ -808,16 +801,16 @@ func SlideCard(data SlideCardData) templ.Component {
 			var templ_7745c5c3_Var23 string
 			templ_7745c5c3_Var23, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf(` { 
             'opacity-100 translate-x-0' : ($_%[1]sClick||$_%[1]sHover), 
-            'opacity-0 translate-x-[-100%%]' : (!$_%[1]sClick && !$_%[1]sHover)
+            'opacity-0 translate-x-[-120%%]' : (!$_%[1]sClick && !$_%[1]sHover)
             }`, data.id))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/pages/HomePage.templ`, Line: 297, Col: 24}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/pages/HomePage.templ`, Line: 295, Col: 24}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var23))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 51, "\" class=\"card card-md bg-base-100/50 backdrop-blur  \n        border-1 border-base-content/10\n    shadow-sm shadow-base-content/20\n    rounded-2xl z-10\n    absolute top-0 left-0 \n    transition-all duration-300 translate-x-[-100%]\n    opacity-0\n    transform\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 51, "\" class=\"card card-md bg-base-100/50 backdrop-blur  \n        border-1 border-base-content/10\n    shadow-sm shadow-base-content/20\n    rounded-2xl z-10\n    absolute top-0 left-0 \n    transition-all duration-300 translate-x-[-120%]\n    opacity-0\n    transform\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -829,16 +822,16 @@ func SlideCard(data SlideCardData) templ.Component {
 			var templ_7745c5c3_Var24 string
 			templ_7745c5c3_Var24, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf(` { 
             'opacity-100 translate-x-0' : ($_%[1]sClick||$_%[1]sHover), 
-            'opacity-0 translate-x-[100%%]' : (!$_%[1]sClick && !$_%[1]sHover)
+            'opacity-0 translate-x-[120%%]' : (!$_%[1]sClick && !$_%[1]sHover)
             }`, data.id))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/pages/HomePage.templ`, Line: 311, Col: 24}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/pages/HomePage.templ`, Line: 309, Col: 24}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var24))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 53, "\" class=\"card card-md bg-base-100/50 backdrop-blur  \n            border-1 border-base-content/10\n        shadow-sm shadow-base-content/20\n        rounded-2xl z-10\n        absolute top-0 right-0 \n        transition-all duration-300 translate-x-[100%]\n        opacity-0\n        transform\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 53, "\" class=\"card card-md bg-base-100/50 backdrop-blur  \n            border-1 border-base-content/10\n        shadow-sm shadow-base-content/20\n        rounded-2xl z-10\n        absolute top-0 right-0 \n        transition-all duration-300 translate-x-[120%]\n        opacity-0\n        transform\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -951,6 +944,7 @@ type ModelCardData struct {
 	name   string
 	logo   templ.Component
 	badges []templ.Component
+	color  Color
 }
 
 func ModelCard(data ModelCardData) templ.Component {
@@ -974,20 +968,95 @@ func ModelCard(data ModelCardData) templ.Component {
 			templ_7745c5c3_Var28 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 59, "<div class=\"card w-56 aspect-[3/2] bg-accent/10 shadow-sm\"><div class=\"card-body\"><!--Name--><h3 class=\"card-title\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 59, "<div")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		if data.color == ColorPrimary {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 60, " class=\"card w-full min-w-52 aspect-[3/2] bg-primary/20\n        text-primary\n        transition-all duration-300\n        cursor-pointer\n        shadow-sm hover:bg-primary hover:text-primary-content \"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 61, " else")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		if data.color == ColorAccent {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 62, " class=\"card w-full min-w-52 aspect-[3/2] bg-accent/20\n        text-accent\n        transition-all duration-300\n        cursor-pointer\n        shadow-sm hover:bg-accent hover:text-accent-content \"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 63, " else")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		if data.color == ColorNeutral {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 64, " class=\"card w-full min-w-52 aspect-[3/2] bg-neutral/20\n        text-neutral\n        transition-all duration-300\n        cursor-pointer\n        shadow-sm hover:bg-neutral hover:text-neutral-content \"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 65, " else")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		if data.color == ColorInfo {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 66, " class=\"card w-full min-w-52 aspect-[3/2] bg-info/20\n        text-info\n        transition-all duration-300\n        cursor-pointer\n        shadow-sm hover:bg-info hover:text-info-content \"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 67, " else")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		if data.color == ColorSuccess {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 68, " class=\"card w-full min-w-52 aspect-[3/2] bg-success/20\n        text-success\n        transition-all duration-300\n        cursor-pointer\n        shadow-sm hover:bg-success hover:text-success-content \"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 69, " else")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		if data.color == ColorWarning {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 70, " class=\"card w-full min-w-52 aspect-[3/2] bg-warning/20\n        text-warning\n        transition-all duration-300\n        cursor-pointer\n        shadow-sm hover:bg-warning hover:text-warning-content \"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 71, " else")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		if data.color == ColorError {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 72, " class=\"card w-full min-w-52 aspect-[3/2] bg-error/20\n        text-error\n        transition-all duration-300\n        cursor-pointer\n        shadow-sm hover:bg-error hover:text-error-content \"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		} else {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 73, " class=\"card w-full min-w-52 aspect-[3/2] bg-secondary/20\n        text-secondary\n        transition-all duration-300\n        cursor-pointer\n        shadow-sm hover:bg-secondary hover:text-secondary-content \"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 74, "><div class=\"card-body  p-5\"><!--Name--><h3 class=\"card-title max-w-20\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var29 string
 		templ_7745c5c3_Var29, templ_7745c5c3_Err = templ.JoinStringErrs(data.name)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/pages/HomePage.templ`, Line: 354, Col: 46}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/pages/HomePage.templ`, Line: 404, Col: 55}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var29))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 60, "</h3><!-- Logo --><div class=\"absolute top-6 right-6\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 75, "</h3><!-- Logo --><div class=\"absolute top-5 end-5\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -995,12 +1064,12 @@ func ModelCard(data ModelCardData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 61, "</div><!--Badges --><div class=\"absolute bottom-6 end-6\"><ul>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 76, "</div><!--Badges --><div class=\"absolute bottom-5\"><ul class=\"flex gap-2 items-center justify-end\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		for _, badge := range data.badges {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 62, "<li>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 77, "<li>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -1008,12 +1077,12 @@ func ModelCard(data ModelCardData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 63, "</li>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 78, "</li>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 64, "</ul></div></div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 79, "</ul></div></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -1063,100 +1132,95 @@ func Badge(data BadgeData) templ.Component {
 			templ_7745c5c3_Var30 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 65, "<div class=\"tooltip tooltip-bottom\" data-tip=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 80, "<div class=\"tooltip tooltip-bottom tooltip-sm \" data-tip=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var31 string
 		templ_7745c5c3_Var31, templ_7745c5c3_Err = templ.JoinStringErrs(data.text)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/pages/HomePage.templ`, Line: 395, Col: 60}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/pages/HomePage.templ`, Line: 447, Col: 24}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var31))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 66, "\"><div")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 81, "\"><div")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		if data.color == ColorPrimary {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 67, " class=\" h-8 w-8 bg-primary-content text-primary rounded-full flex items-center justify-center\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 82, " class=\"h-7 w-7 bg-primary-content/50 text-primary rounded-full flex items-center justify-center\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 68, " else")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 83, " else")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		if data.color == ColorSecondary {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 69, " class=\" h-8 w-8 bg-secondary-content text-secondary rounded-full flex items-center justify-center\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 84, " class=\"h-7 w-7 bg-secondary-content/50 text-secondary rounded-full flex items-center justify-center\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 70, " else")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 85, " else")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		if data.color == ColorAccent {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 71, " class=\" h-8 w-8 bg-accent-content text-accent rounded-full flex items-center justify-center\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 86, " class=\"h-7 w-7 bg-accent-content/50 text-accent rounded-full flex items-center justify-center\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 72, " else")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		if data.color == ColorNeutral {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 73, " class=\" h-8 w-8 bg-neutral-content text-neutral rounded-full flex items-center justify-center\"")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 74, " else")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 87, " else")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		if data.color == ColorInfo {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 75, " class=\" h-8 w-8 bg-info-content text-info rounded-full flex items-center justify-center\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 88, " class=\"h-7 w-7 bg-info-content/50 text-info rounded-full flex items-center justify-center\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 76, " else")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 89, " else")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		if data.color == ColorSuccess {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 77, " class=\" h-8 w-8 bg-success-content text-success rounded-full flex items-center justify-center\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 90, " class=\"h-7 w-7 bg-success-content/50 text-success rounded-full flex items-center justify-center\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 78, " else")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 91, " else")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		if data.color == ColorWarning {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 79, " class=\" h-8 w-8 bg-warning-content text-warning rounded-full flex items-center justify-center\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 92, " class=\"h-7 w-7 bg-warning-content/50 text-warning rounded-full flex items-center justify-center\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 80, " else")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 93, " else")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		if data.color == ColorError {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 81, " class=\" h-8 w-8 bg-error-content text-error rounded-full flex items-center justify-center\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 94, " class=\"h-7 w-7 bg-error-content/50 text-error rounded-full flex items-center justify-center\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		} else {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 95, " class=\"h-7 w-7 bg-neutral-content/50 text-neutral rounded-full flex items-center justify-center\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 82, ">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 96, ">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -1164,7 +1228,7 @@ func Badge(data BadgeData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 83, "</div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 97, "</div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -1194,7 +1258,7 @@ func Models() templ.Component {
 			templ_7745c5c3_Var32 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 84, "<h2 class=\"text-lg font-bold\">Models</h2><label class=\"input \">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 98, "<h2 class=\"text-lg font-bold\">Models</h2><label class=\"input w-full\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -1202,25 +1266,94 @@ func Models() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 85, "<input tabindex=\"-1\" type=\"search\" class=\"grow\" placeholder=\"Search\"></label><ul tabindex=\"-1\" class=\"min-w-72 h-full max-h-96 overflow-y-scroll\nspace-y-2 px-1 grid grid-cols-1 sm:grid-cols-3\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 99, "<input tabindex=\"-1\" type=\"search\" class=\"grow\" placeholder=\"Search\"></label><ul tabindex=\"-1\" class=\"list shadow-md min-w-[45vw] max-h-96 overflow-y-scroll\nspace-y-2 px-1\"><li class=\"pb-2 pt-4 text-xs opacity-60 tracking-wide\">OpenAI</li><ul class=\"grid grid-cols-1 sm:grid-cols-3 gap-2 mx-auto\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = ModelCard(ModelCardData{
-			id:   "235d",
-			name: "GPT-4o",
-			logo: components.LogoGPT("size-7"),
-			badges: []templ.Component{
-				Badge(BadgeData{
-					text:  "Vision",
-					icon:  components.IconEye("size-4"),
-					color: ColorPrimary}),
-			},
-		}).Render(ctx, templ_7745c5c3_Buffer)
+		for i := 0; i < 6; i++ {
+			templ_7745c5c3_Err = ModelCard(ModelCardData{
+				id:    "235d",
+				color: ColorSecondary,
+				name:  "GPT-4o",
+				logo:  components.LogoGPT("size-7"),
+				badges: []templ.Component{
+					Badge(BadgeData{
+						text: "Vision",
+						icon: components.IconEye("size-4"),
+					}),
+					Badge(BadgeData{
+						text: "Reasoning",
+						icon: components.IconBrain("size-4"),
+					}),
+					Badge(BadgeData{
+						text: "File Input",
+						icon: components.IconFileInput("size-4"),
+					}),
+				},
+			}).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 100, "</ul><li class=\"pb-2 pt-4 text-xs opacity-60 tracking-wide\">Anthropic</li><ul class=\"grid grid-cols-1 sm:grid-cols-3 gap-2 mx-auto\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 86, "</ul>")
+		for i := 0; i < 3; i++ {
+			templ_7745c5c3_Err = ModelCard(ModelCardData{
+				id:    "235d",
+				color: ColorPrimary,
+				name:  "Claude Sonnet 4",
+				logo:  components.LogoClaude("size-7"),
+				badges: []templ.Component{
+					Badge(BadgeData{
+						text: "Vision",
+						icon: components.IconEye("size-4"),
+					}),
+					Badge(BadgeData{
+						text: "Reasoning",
+						icon: components.IconBrain("size-4"),
+					}),
+					Badge(BadgeData{
+						text: "File Input",
+						icon: components.IconFileInput("size-4"),
+					}),
+				},
+			}).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 101, "</ul><li class=\"pb-2 pt-4 text-xs opacity-60 tracking-wide\">Google</li><ul class=\"grid grid-cols-1 sm:grid-cols-3 gap-2 mx-auto\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		for i := 0; i < 3; i++ {
+			templ_7745c5c3_Err = ModelCard(ModelCardData{
+				id:    "235d",
+				color: ColorAccent,
+				name:  "Gemini 2.5 Pro",
+				logo:  components.LogoGemini("size-7"),
+				badges: []templ.Component{
+					Badge(BadgeData{
+						text: "Vision",
+						icon: components.IconEye("size-4"),
+					}),
+					Badge(BadgeData{
+						text: "Reasoning",
+						icon: components.IconBrain("size-4"),
+					}),
+					Badge(BadgeData{
+						text: "File Input",
+						icon: components.IconFileInput("size-4"),
+					}),
+				},
+			}).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 102, "</ul></ul>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -1249,7 +1382,7 @@ func ActionBar() templ.Component {
 			templ_7745c5c3_Var33 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 87, "<section class=\"fixed z-10 right-0 flex flex-col gap-4\n        items-end justify-start h-full p-4\n    \"><div class=\"tooltip tooltip-sm tooltip-left\" data-tip=\"Mute\"><button class=\"btn btn-neutral btn-circle\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 103, "<section class=\"fixed z-10 right-0 flex flex-col gap-4\n        items-end justify-start h-full p-4\n    \"><div class=\"tooltip tooltip-sm tooltip-left\" data-tip=\"Mute\"><button class=\"btn btn-neutral btn-circle\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -1257,7 +1390,7 @@ func ActionBar() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 88, "</button></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 104, "</button></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -1301,7 +1434,7 @@ func ActionBar() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 89, "</section>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 105, "</section>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -1330,7 +1463,7 @@ func PromptBar() templ.Component {
 			templ_7745c5c3_Var34 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 90, "<section data-class=\"{ 'opacity-100' : true }\" class=\"fixed z-50 bottom-0 start-0 flex gap-2 sm:gap-3 items-center justify-center w-full \n    bg-base-100/0 backdrop-blur p-4 sm:p-6 shadow-md shadow-base-content\n    transition-all duration-500 opacity-0\n    \"><!-- Attach file --><div class=\"tooltip tooltip-sm tooltip-accent\" data-tip=\"Attach File\"><!-- styles secondary if active --><button class=\"btn btn-accent btn-circle btn-soft\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 106, "<section data-class=\"{ 'opacity-100' : true }\" class=\"fixed z-50 bottom-0 start-0 flex gap-2 sm:gap-3 items-center justify-center w-full \n    bg-base-100/0 backdrop-blur p-4 sm:p-6 shadow-md shadow-base-content\n    transition-all duration-500 opacity-0\n    \"><!-- Attach file --><div class=\"tooltip tooltip-sm tooltip-accent\" data-tip=\"Attach File\"><!-- styles secondary if active --><button class=\"btn btn-accent btn-circle btn-soft\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -1338,7 +1471,7 @@ func PromptBar() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 91, "</button></div><!-- Reasoning --><div class=\"tooltip tooltip-sm tooltip-accent\" data-tip=\"Reasoning\"><!-- styles secondary if active --><button class=\"btn btn-accent btn-circle btn-soft \">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 107, "</button></div><!-- Reasoning --><div class=\"tooltip tooltip-sm tooltip-accent\" data-tip=\"Reasoning\"><!-- styles secondary if active --><button class=\"btn btn-accent btn-circle btn-soft \">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -1346,7 +1479,7 @@ func PromptBar() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 92, "</button></div><!-- Web Search --><div class=\"tooltip tooltip-sm tooltip-accent\" data-tip=\"Web Search\"><!-- styles secondary if active --><button class=\"btn btn-accent btn-circle btn-soft\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 108, "</button></div><!-- Web Search --><div class=\"tooltip tooltip-sm tooltip-accent\" data-tip=\"Web Search\"><!-- styles secondary if active --><button class=\"btn btn-accent btn-circle btn-soft\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -1354,7 +1487,7 @@ func PromptBar() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 93, "</button></div><!-- Prompt --><textarea tabindex=\"1\" data-on-input=\"\n        evt.target.style.height = 0 + 'px'; \n        evt.target.style.height =  evt.target.scrollHeight + 'px';\" class=\"textarea  resize-none min-w-40 sm:min-w-72 w-full max-h-52 min-h-10 h-10\n        max-w-lg\" placeholder=\"Type here\"></textarea><!-- Send Prompt --><div class=\"tooltip tooltip-sm tooltip-primary\" data-tip=\"Send Prompt\"><button class=\"btn btn-primary btn-circle\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 109, "</button></div><!-- Prompt --><textarea tabindex=\"1\" data-on-input=\"\n        evt.target.style.height = 0 + 'px'; \n        evt.target.style.height =  evt.target.scrollHeight + 'px';\" class=\"textarea  resize-none min-w-40 sm:min-w-72 w-full max-h-52 min-h-10 h-10\n        max-w-lg\" placeholder=\"Type here\"></textarea><!-- Send Prompt --><div class=\"tooltip tooltip-sm tooltip-primary\" data-tip=\"Send Prompt\"><button class=\"btn btn-primary btn-circle\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -1362,7 +1495,7 @@ func PromptBar() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 94, "</button></div></section>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 110, "</button></div></section>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

@@ -46,6 +46,31 @@
 @plugin "@tailwindcss/typography";
 
 
-.glow {
-    filter: drop-shadow(0 0 15px currentColor);
+/* .glow { */
+/*     filter: drop-shadow(0 0 15px currentColor); */
+/* } */
+
+@utility glow {
+  filter: drop-shadow(0 0 15px currentColor);
+}
+
+@theme {
+  @keyframes reflect {
+    0% {
+      transform: translateX(-100%);
+      opacity: 0;
+    }
+    50% {
+      transform: translateX(0);
+      opacity: 1;
+    }
+    100% {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+  }
+}
+
+@utility animate-reflect {
+  animation: reflect 0.5s ease-out;
 }

@@ -11,9 +11,11 @@ func main() {
 
 	mux.Handle("GET /static/{filepath...}", handlers.StaticGET())
 	
-	mux.Handle("GET /", handlers.HomeGET())
-
 	mux.HandleFunc("GET /hotreload", handlers.HotReloadSSE)
+
+	mux.Handle("GET /login", handlers.LoginGET())
+
+	mux.Handle("GET /", handlers.HomeGET())
 
 	log.Println("Server is running on port 8080")
 
