@@ -1,0 +1,113 @@
+package components
+
+import (
+	"fmt"
+	"strings"
+)
+
+templ Chat(bubbles []templ.Component) {
+	<div id="chat" class="w-full">
+		for _, bubble := range bubbles {
+			@bubble
+		}
+	</div>
+}
+
+type ChatBubbleData struct {
+	ID        string
+	Role      string
+	Type      string
+	Text      string
+	ImageUrl  string
+	Timestamp string
+	Status    string
+	Model     string
+	Company   string
+}
+
+templ ChatBubble(data ChatBubbleData) {
+	if data.Role == "loading" {
+		<div class="chat chat-start">
+			<div class="chat-image avatar">
+				switch strings.ToLower(data.Company) {
+					case "google":
+						@LogoGemini("size-7 text-accent animate-spin glow")
+					case "openai":
+						@LogoGPT("size-7 text-accent animate-spin glow")
+					case "anthropic":
+						@LogoClaude("size-7 text-accent animate-spin glow")
+					case "deepseek":
+						@LogoDeepSeek("size-7 text-accent animate-spin glow")
+					default:
+						@LogoGPT("size-7 text-accent animate-spin glow")
+				}
+			</div>
+			<div class="chat-header">
+				<span>{ data.Model }</span>
+			</div>
+			<div class="chat-bubble">
+				Typing...
+			</div>
+		</div>
+	} else if data.Role == "error" {
+		<div class="chat chat-start">
+			<div class="chat-image avatar">
+				switch strings.ToLower(data.Company) {
+					case "google":
+						@LogoGemini("size-7 text-accent animate-pulse glow")
+					case "openai":
+						@LogoGPT("size-7 text-accent animate-pulse glow")
+					case "anthropic":
+						@LogoClaude("size-7 text-accent animate-pulse glow")
+					case "deepseek":
+						@LogoDeepSeek("size-7 text-accent animate-pulse glow")
+					default:
+						@LogoGPT("size-7 text-accent animate-pulse glow")
+				}
+			</div>
+			<div class="chat-header">
+				<span>{ data.Model }</span>
+			</div>
+			<div class="chat-bubble">
+				{ data.Text }
+			</div>
+		</div>
+	} else if data.Role == "user" {
+		<div class="chat chat-end">
+			<div class="chat-header">
+				<span>You</span>
+				<time class="text-xs opacity-50">{ data.Timestamp }</time>
+			</div>
+			<div class="chat-bubble chat-bubble-primary">
+				{ data.Text }
+			</div>
+		</div>
+	} else {
+		<div class="chat chat-start">
+			<div class="chat-image avatar">
+				switch strings.ToLower(data.Company) {
+					case "google":
+						@LogoGemini("size-7 text-accent animate-pulse glow")
+					case "openai":
+						@LogoGPT("size-7 text-accent animate-pulse glow")
+					case "anthropic":
+						@LogoClaude("size-7 text-accent animate-pulse glow")
+					case "deepseek":
+						@LogoDeepSeek("size-7 text-accent animate-pulse glow")
+					default:
+						@LogoGPT("size-7 text-accent animate-pulse glow")
+				}
+			</div>
+			<div class="chat-header">
+				<span>{ data.Model }</span>
+				<time class="text-xs opacity-50">{ data.Timestamp }</time>
+			</div>
+			<div
+				class={"chat-bubble " + data.ID}
+				data-on-load={ fmt.Sprintf("document.getElementsByClassName('chat-bubble %s')[0].innerHTML=`%s`", data.ID, data.Text) }
+			>
+				{ data.Text }
+			</div>
+		</div>
+	}
+}

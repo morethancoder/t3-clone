@@ -10,7 +10,7 @@ import (
 
 var once sync.Once
 
-func HotReloadSSE(w http.ResponseWriter, r *http.Request) {
+func SSEHotreload(w http.ResponseWriter, r *http.Request) {
 	sse := datastar.NewSSE(w, r)
 
 	once.Do(func() {

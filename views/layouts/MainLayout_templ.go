@@ -8,10 +8,7 @@ package layouts
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-import (
-	"morethancoder/t3-clone/views/components"
-	"os"
-)
+import "morethancoder/t3-clone/views/components"
 
 func MainLayout(view templ.Component) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
@@ -34,7 +31,7 @@ func MainLayout(view templ.Component) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!doctype html><html lang=\"en\" data-theme=\"gunter\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><link rel=\"icon\" type=\"image/png\" href=\"/static/assets/favicon-96x96.png\" sizes=\"96x96\"><link rel=\"icon\" type=\"image/svg+xml\" href=\"/static/assets/favicon.svg\"><link rel=\"shortcut icon\" href=\"/static/assets/favicon.ico\"><link rel=\"apple-touch-icon\" sizes=\"180x180\" href=\"/static/assets/apple-touch-icon.png\"><meta name=\"apple-mobile-web-app-title\" content=\"Gunter\"><link rel=\"manifest\" href=\"/static/assets/site.webmanifest\"><title>Gunter</title><link href=\"/static/css/styles.css\" rel=\"stylesheet\"><script type=\"module\" src=\"/static/js/datastar@v1.0.0-beta.11.min.js\"></script></head><body><main id=\"view\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!doctype html><html lang=\"en\" data-theme=\"gunter\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><link rel=\"icon\" type=\"image/png\" href=\"/static/assets/favicon-96x96.png\" sizes=\"96x96\"><link rel=\"icon\" type=\"image/svg+xml\" href=\"/static/assets/favicon.svg\"><link rel=\"shortcut icon\" href=\"/static/assets/favicon.ico\"><link rel=\"apple-touch-icon\" sizes=\"180x180\" href=\"/static/assets/apple-touch-icon.png\"><meta name=\"apple-mobile-web-app-title\" content=\"Gunter\"><link rel=\"manifest\" href=\"/static/assets/site.webmanifest\"><title>Gunter</title><link href=\"/static/css/styles.css\" rel=\"stylesheet\"><script type=\"module\" src=\"/static/js/datastar@v1.0.0-beta.11.min.js\"></script></head><body>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -42,17 +39,11 @@ func MainLayout(view templ.Component) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</main>")
+		templ_7745c5c3_Err = components.Alert(components.AlertData{}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		if os.Getenv("ENV") == "dev" {
-			templ_7745c5c3_Err = components.RefreshOnContent().Render(ctx, templ_7745c5c3_Buffer)
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</body></html>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</body></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

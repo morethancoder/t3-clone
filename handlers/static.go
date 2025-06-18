@@ -7,7 +7,7 @@ import (
     "strings"
 )
 
-func StaticGET() http.Handler {
+func GETStatic() http.Handler {
     return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
         // get path and check if it is gzipped
         path := r.URL.Path

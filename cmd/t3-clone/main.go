@@ -1,23 +1,39 @@
 package main
 
 import (
-	"log"
 	"morethancoder/t3-clone/handlers"
+	"morethancoder/t3-clone/services"
+	"morethancoder/t3-clone/utils"
 	"net/http"
+	"os"
 )
 
 func main() {
-	mux := http.NewServeMux()	
+	if os.Getenv("ENV") == "dev" {
+		utils.Log.DebugMode = true
+	}
 
-	mux.Handle("GET /static/{filepath...}", handlers.StaticGET())
-	
-	mux.HandleFunc("GET /hotreload", handlers.HotReloadSSE)
+	go services.LoopAndCleanSessionStore()
 
-	mux.Handle("GET /login", handlers.LoginGET())
+	mux := http.NewServeMux()
 
-	mux.Handle("GET /", handlers.HomeGET())
+	mux.HandleFunc("GET /sse", handlers.SSEHub)
+	mux.HandleFunc("POST /chat", handlers.POSTChat)
 
-	log.Println("Server is running on port 8080")
+	mux.HandleFunc("GET /login", handlers.GETLogin())
+	mux.HandleFunc("GET /sign-out", handlers.GETSignOut())
+
+	mux.HandleFunc("POST /auth-redirect", handlers.POSTAuthRedirect())
+	mux.HandleFunc("GET /auth-redirect", handlers.GETAuthRedirect())
+
+	if os.Getenv("ENV") == "dev" {
+		mux.HandleFunc("GET /hotreload", handlers.SSEHotreload)
+	}
+
+	mux.Handle("GET /static/{filepath...}", handlers.GETStatic())
+	mux.HandleFunc("GET /", handlers.GETHome())
+
+	utils.Log.Debug("Listening on port 8080")
 
 	http.ListenAndServe(":8080", mux)
 }

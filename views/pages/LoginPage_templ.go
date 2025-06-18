@@ -9,6 +9,18 @@ import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
 import "morethancoder/t3-clone/views/components"
+import "context"
+import "morethancoder/t3-clone/db"
+import "os"
+
+func GetOAuth2Providers(ctx context.Context) []db.OAuth2Provider {
+	data, ok := ctx.Value("OAuth2Providers").([]db.OAuth2Provider)
+	if !ok {
+		return []db.OAuth2Provider{}
+	} else {
+		return data
+	}
+}
 
 func LoginPage() templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
@@ -31,7 +43,7 @@ func LoginPage() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"h-full w-full min-h-screen flex items-center justify-center\"><!-- Login Form --><form class=\"card z-10 w-full max-w-sm aspect-[3/2] mx-auto\nbackdrop-blur\nbg-base-100/50 shadow-md border-2 border-base-content/10\" action=\"/login\"><div class=\"card-body flex flex-col items-center justify-center gap-4 p-8\"><div class=\"avatar\"></div><div class=\"avatar avatar-placeholder\"><div class=\"bg-neutral text-neutral-content w-10 rounded-box\"><span class=\"\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<main id=\"view\"><div class=\"h-full w-full min-h-screen flex items-center justify-center\"><div class=\"card z-10 w-full max-w-sm aspect-[3/2] mx-auto\nbackdrop-blur\nbg-base-100/50 shadow-md border-2 border-base-content/10\"><div class=\"card-body flex flex-col items-center justify-center gap-4 p-8\"><div class=\"avatar\"></div><div class=\"avatar avatar-placeholder\"><div class=\"bg-neutral text-neutral-content w-10 rounded-box\"><span class=\"\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -39,52 +51,67 @@ func LoginPage() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</span></div></div><h2 class=\"card-title text-3xl\">Welcome Back</h2><p class=\"text-sm opacity-50\">Sign in to continue to your account</p><button class=\"btn btn-wide bg-neutral/15 hover:bg-neutral/30 text-neutral\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</span></div></div><h2 class=\"card-title text-3xl\">Welcome Back</h2><p class=\"text-sm opacity-50\">Sign in to continue to your account</p>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = components.LogoGoogleColored("size-5").Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<span>Sign in with Google</span></button><div class=\"divider my-1\"></div><p class=\"text-xs opacity-80 max-w-72\">By continuing, you agree to our <a class=\"link link-primary\">Terms of Service</a></p></div></form><!-- Overlay --><!--\n<div class=\"object-cover  absolute top-0 left-0 h-full w-full\nbg-[url('/static/assets/peng-background.webp')]\"></div>\n-->")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = BackgroundBlobs().Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</div>")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		return nil
-	})
-}
-
-func BackgroundBlobs() templ.Component {
-	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
-		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
-		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
-			return templ_7745c5c3_CtxErr
-		}
-		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
-		if !templ_7745c5c3_IsBuffer {
-			defer func() {
-				templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
-				if templ_7745c5c3_Err == nil {
-					templ_7745c5c3_Err = templ_7745c5c3_BufErr
+		for _, provider := range GetOAuth2Providers(ctx) {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<a href=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var2 templ.SafeURL
+			templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL(provider.AuthURL + os.Getenv("APP_URL") + "/auth-redirect"))
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/pages/LoginPage.templ`, Line: 37, Col: 92}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "\" class=\"btn btn-wide bg-neutral/15 hover:bg-neutral/30 text-neutral\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			switch provider.Name {
+			case "google":
+				templ_7745c5c3_Err = components.LogoGoogleColored("size-5").Render(ctx, templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
 				}
-			}()
+			case "github":
+				templ_7745c5c3_Err = components.LogoGithub("size-5").Render(ctx, templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<span>Sign in with ")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var3 string
+			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(provider.DisplayName)
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/pages/LoginPage.templ`, Line: 46, Col: 56}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</span></a>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
 		}
-		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var2 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var2 == nil {
-			templ_7745c5c3_Var2 = templ.NopComponent
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<div class=\"divider my-1\"></div><p class=\"text-xs opacity-80 max-w-72\">By continuing, you agree to our <a class=\"link link-primary\">Terms of Service</a></p></div></div>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
 		}
-		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<style>\n        .blob {\n            filter: blur(40px);\n            border-radius: 50%;\n        }\n\n        .auto-blob-1 {\n            background: var(--color-primary);\n            animation: float1 8s ease-in-out infinite;\n        }\n\n        .auto-blob-2 {\n            background: var(--color-secondary);\n            animation: float2 12s ease-in-out infinite;\n        }\n\n        .auto-blob-3 {\n            background: var(--color-success);\n            animation: float3 10s ease-in-out infinite;\n        }\n\n        .auto-blob-4 {\n            background: var(--color-info);\n            animation: float4 15s ease-in-out infinite;\n        }\n\n\n        @keyframes float1 {\n            0%, 100% { transform: translate(0, 0) rotate(0deg) scale(1); }\n            25% { transform: translate(100px, -50px) rotate(90deg) scale(1.1); }\n            50% { transform: translate(-50px, -100px) rotate(180deg) scale(0.9); }\n            75% { transform: translate(-100px, 50px) rotate(270deg) scale(1.05); }\n        }\n\n        @keyframes float2 {\n            0%, 100% { transform: translate(0, 0) rotate(0deg) scale(1); }\n            33% { transform: translate(-80px, 120px) rotate(120deg) scale(1.2); }\n            66% { transform: translate(120px, -80px) rotate(240deg) scale(0.8); }\n        }\n\n        @keyframes float3 {\n            0%, 100% { transform: translate(0, 0) rotate(0deg) scale(1); }\n            20% { transform: translate(60px, 80px) rotate(72deg) scale(1.1); }\n            40% { transform: translate(-40px, 120px) rotate(144deg) scale(0.9); }\n            60% { transform: translate(-120px, -40px) rotate(216deg) scale(1.15); }\n            80% { transform: translate(80px, -60px) rotate(288deg) scale(0.95); }\n        }\n\n        @keyframes float4 {\n            0%, 100% { transform: translate(0, 0) rotate(0deg) scale(1); }\n            50% { transform: translate(-150px, 100px) rotate(180deg) scale(1.3); }\n        }\n\n        .fade-in {\n            animation: fadeIn 1s ease-out;\n        }\n\n        @keyframes fadeIn {\n            from { opacity: 0; transform: translateY(30px); }\n            to { opacity: 1; transform: translateY(0); }\n        }\n    </style><div class=\"fixed inset-0 pointer-events-none\"><div class=\"blob auto-blob-1 absolute w-80 h-80 opacity-40 top-40 left-40\"></div><div class=\"blob auto-blob-2 absolute w-96 h-96 opacity-30 top-1/4 right-48\"></div><div class=\"blob auto-blob-3 absolute w-64 h-64 opacity-50 bottom-1/3 left-1/4\"></div><div class=\"blob auto-blob-4 absolute w-72 h-72 opacity-35 bottom-36 right-36\"></div></div>")
+		templ_7745c5c3_Err = components.BackgroundBlobs().Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</div></main>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

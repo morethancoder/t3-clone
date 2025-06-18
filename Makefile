@@ -1,7 +1,7 @@
 
 
 
-templ:
+run:
 	go tool templ generate -cmd="go run ./cmd/t3-clone" -watch 
 
 css:
@@ -9,5 +9,5 @@ css:
 
 
 
-.PHONY: templ, css 
+.PHONY: run, css 
 

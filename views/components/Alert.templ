@@ -1,0 +1,53 @@
+package components
+
+type AlertData struct {
+	Level   string
+	Message string
+	Icon    templ.Component
+}
+
+templ Alert(data AlertData) {
+	<div
+		id="alert"
+		role="alert"
+		if data.Level=="error" {
+        data-signals-_show-alert="true"
+			class="alert alert-error fixed top-5 right-1/2 translate-x-1/2 z-50 transition-all duration-300"
+		}
+		else
+		if data.Level=="success" {
+        data-signals-_show-alert="true"
+			class="alert alert-success fixed top-5 right-1/2 translate-x-1/2 z-50 transition-all duration-300"
+		}
+		else
+		if data.Level=="warning" {
+        data-signals-_show-alert="true"
+			class="alert alert-warning fixed top-5 right-1/2 translate-x-1/2 z-50 transition-all duration-300"
+		}
+		else
+		if data.Level=="info" {
+        data-signals-_show-alert="true"
+			class="alert alert-info fixed top-5 right-1/2 translate-x-1/2 transition-all duration-300"
+		}
+		else
+		if data.Level=="neutral" {
+        data-signals-_show-alert="true"
+			class="alert alert-neutral fixed top-5 right-1/2 translate-x-1/2 z-50 transition-all duration-300"
+		} else {
+        data-signals-_show-alert="false"
+			class="alert fixed top-5 right-1/2 translate-x-1/2 z-50 transition-all duration-300 opacity-0
+        transform translate-y-[-100%]"
+		}
+
+
+        data-on-load="setTimeout(() => $_showAlert=false, 5000)"
+        data-class="{ 
+            'opacity-0 translate-y-[-100%]' : !$_showAlert,
+        }"
+	>
+		if data.Icon != nil {
+			@data.Icon
+		}
+		<span>{ data.Message }</span>
+	</div>
+}

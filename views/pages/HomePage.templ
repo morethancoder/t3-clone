@@ -3,24 +3,52 @@ package pages
 import (
 "fmt"
 "morethancoder/t3-clone/views/components"
-
-
+	"context"
+	"morethancoder/t3-clone/db"
+	"strings"
 )
 
-templ HomePage() {
-<div class="h-full w-full min-h-screen ">
-    @HistoryBar()
-    @ActionBar()
-    @PromptBar()
-    @MainSection(Starter())
-</div>
+func GetAuthRecord(ctx context.Context) db.AuthRecord {
+    data,ok  := ctx.Value("AuthRecord").(db.AuthRecord)
+    if !ok {
+        return db.AuthRecord{}
+    } 
+    return data
+}
 
+func GetModelsMap(ctx context.Context) map[string][]db.ModelRecord {
+   data, ok := ctx.Value("Models").(map[string][]db.ModelRecord) 
+    if !ok {
+        return map[string][]db.ModelRecord{}
+    } 
+    return data
+}
+
+
+templ HomePage() {
+<main id="view" data-replace-url="'/'"
+data-signals-model={ fmt.Sprintf("'%s'", GetModelsMap(ctx)["google"][0].Name) }
+data-signals-prompt=""
+data-signals-chat="[]"
+data-on-load="@get('/sse')"
+>
+    <div class="h-full w-full min-h-screen ">
+        <span class="fixed top-10 right-1/2 translate-x-1/2 
+        badge badge-sm badge-outline badge-info" data-text="$model"></span>
+        @HistoryBar()
+        @ActionBar()
+        @PromptBar()
+        @MainSection(Starter())
+    </div>
+</main>
 }
 
 templ MainSection(content templ.Component) {
 <section class="flex flex-col gap-4 w-full mx-auto max-w-4xl 
     items-center justify-end h-full min-h-screen px-8 sm:px-16 pb-32 ">
-    @content
+    <div id="chat">
+        @content
+    </div>
 </section>
 }
 
@@ -120,31 +148,9 @@ templ StarterCard(icon templ.Component, text string) {
 </div>
 }
 
-templ Chat() {
-<div class="w-full">
-    <div class="chat chat-start">
-        <div class="chat-image avatar">
-            @components.LogoGemini("size-8 text-accent animate-pulse glow")
-        </div>
-        <div class="chat-header">
-            Gemini 2.5 Pro
-            <time class="text-xs opacity-50">12:45</time>
-        </div>
-        <div class="chat-bubble">How can I help you!</div>
-        <div class="chat-footer opacity-50">Delivered</div>
-    </div>
-    <div class="chat chat-end">
-        <div class="chat-header">
-            <time class="text-xs opacity-50">2 hour ago</time>
-        </div>
-        <div class="chat-bubble chat-bubble-primary">
-            Tell me the most important 20% of crypto so that I understand 80%
-            of it.
-        </div>
-        <div class="chat-footer opacity-50">Delivered</div>
-    </div>
-</div>
-}
+
+
+
 
 templ HistoryBar() {
 <section class="fixed z-10 left-0 flex flex-col 
@@ -251,13 +257,11 @@ type SlideCardData struct {
 templ SlideCard(data SlideCardData) {
 <div  
 data-signals={ fmt.Sprintf("{_%[1]sClick: false, _%[1]sHover: false}", data.id) } 
+data-on-click={ fmt.Sprintf("$_%[1]sClick= true", data.id) }
 data-on-click__outside={
     fmt.Sprintf("$_%sClick=false", data.id) } class="relative">
     <div 
-            data-class={ fmt.Sprintf(` { 
-            'opacity-0 translate-y-[-100%%]' : ($_%[1]sClick||$_%[1]sHover), 
-            'opacity-100 translate-y-0' : (!$_%[1]sClick && !$_%[1]sHover)
-            }`, data.id) } 
+           
 
     if data.dir == "left" {
         class="tooltip tooltip-right tooltip-sm transition-all duration-100"
@@ -267,14 +271,11 @@ data-on-click__outside={
     }
 
     data-tip={ data.title }>
-        <button data-on-mouseenter={ fmt.Sprintf("$_%sHover=true", data.id) } data-on-mouseleave={
+        <button data-on-mouseenter={ fmt.Sprintf("$_%[1]sHover=true;", data.id) } data-on-mouseleave={
             fmt.Sprintf("$_%sHover=false", data.id) } data-on-keydown__passive={ 
                 fmt.Sprintf("evt.key === 'Enter' ? $_%[1]sClick=!$_%[1]sClick : ''", data.id) }
 
-            data-class={ fmt.Sprintf(` { 
-            'opacity-0 translate-y-[-100%%]' : ($_%[1]sClick||$_%[1]sHover), 
-            'opacity-100 translate-y-0' : (!$_%[1]sClick && !$_%[1]sHover)
-            }`, data.id) } 
+         
 
             class="btn btn-neutral btn-soft btn-circle transition-all duration-300 
         ">
@@ -327,7 +328,69 @@ data-on-click__outside={
 }
 
 templ Settings() {
-<div class="min-w-64">settings</div>
+<h2 class="text-lg font-bold ">Settings</h2>
+<ul tabindex="-1" class="list shadow-md  max-h-[90vh] overflow-y-scroll
+space-y-2 px-1">
+    <li class="pb-2 text-xs opacity-60 tracking-wide">Account</li>
+    <div class="card card-sm min-w-72 bg-neutral/3 rounded-2xl border border-neutral/10">
+        <div class="card-body gap-4 flex items-center flex-col gap-2">
+            <div class="badge badge-primary badge-sm">Pro Plan</div>
+            <div class="flex flex-col items-center gap-1">
+            <div class="avatar">
+              <div class="w-24 rounded-full"
+              >
+                <img
+                src={ db.FileUrl(
+                    GetAuthRecord(ctx).CollectionID,
+                    GetAuthRecord(ctx).ID,
+                    GetAuthRecord(ctx).Avatar,
+                )} />
+              </div>
+            </div>
+                <h3 class="card-title">{ GetAuthRecord(ctx).Name }</h3>
+                <p>{GetAuthRecord(ctx).Email}</p>
+            </div>
+
+            <div class="card-actions w-full">
+                    <a href="/sign-out" 
+                    class="btn btn-wide btn-soft">Sign Out</a>
+                    <button class="btn btn-error btn-soft btn-wide ">Delete Account</button>
+            </div>
+        </div>
+    </div>
+    <li class="pb-2 pt-4 text-xs opacity-60 tracking-wide">Usage</li>
+    <div class="card card-sm min-w-72 bg-neutral/3 rounded-2xl border border-neutral/10">
+        <div class="card-body gap-4 flex items-center flex-col gap-2">
+        <div class="flex w-full items-center justify-between">
+            <h3 class="font-bold text-sm">Message Credits</h3>
+            <span class="text-xs opacity-60">Resets 06/01/2026</span>
+        </div>
+
+        <div class="w-full">
+            <div class="flex w-full items-center justify-between">
+            <span class="">Standard</span>
+            <span>121/1500</span>
+            </div>
+            <progress class="progress w-full" value="121" max="1500"></progress>
+            <span class="text-xs opacity-60">1,379 messages remaining</span>
+        </div>
+
+        <div class="w-full">
+            <div class="flex w-full items-center justify-between">
+            <span class="">Premium</span>
+            <span>10/100</span>
+            </div>
+            <progress class="progress w-full" value="10" max="100"></progress>
+            <span class="text-xs opacity-60">90 messages remaining</span>
+        </div>
+
+                    <button class="btn btn-primary btn-soft btn-wide ">
+                        <span>Buy more credits</span>
+                        @components.IconArrowUp("size-5 transform rotate-90")
+                    </button>
+        </div>
+    </div>
+</ul>
 }
 
 templ Theme() {
@@ -342,19 +405,20 @@ templ Keybinds() {
 type ModelCardData struct {
     id string
     name string
-    logo templ.Component
+    company string
     badges []templ.Component
     color Color
 }
 templ ModelCard(data ModelCardData) {
     <div     
-    if data.color == ColorPrimary {
+    data-on-click={fmt.Sprintf("$model = '%s'", data.name)}
+    if data.color == ColorPrimary || data.company == "anthropic" {
        class="card w-full min-w-52 aspect-[3/2] bg-primary/20
         text-primary
         transition-all duration-300
         cursor-pointer
         shadow-sm hover:bg-primary hover:text-primary-content "
-    } else if data.color == ColorAccent {
+    } else if data.color == ColorAccent || data.company == "google" {
         class="card w-full min-w-52 aspect-[3/2] bg-accent/20
         text-accent
         transition-all duration-300
@@ -372,7 +436,7 @@ templ ModelCard(data ModelCardData) {
         transition-all duration-300
         cursor-pointer
         shadow-sm hover:bg-info hover:text-info-content "
-    } else if data.color == ColorSuccess {
+    } else if data.color == ColorSuccess || data.company == "openai" {
         class="card w-full min-w-52 aspect-[3/2] bg-success/20
         text-success
         transition-all duration-300
@@ -401,10 +465,21 @@ templ ModelCard(data ModelCardData) {
     >
         <div class="card-body  p-5">
             <!--Name-->
-            <h3 class="card-title max-w-20">{ data.name }</h3>
+            <h3 class="card-title max-w-20">{ strings.ReplaceAll(strings.Split(data.name, "/")[1], "-", " ") }</h3>
            <!-- Logo --> 
            <div class="absolute top-5 end-5">
-            @data.logo
+            switch data.company {
+                case "openai":
+                @components.LogoGPT("size-7")
+                case "anthropic":
+                @components.LogoClaude("size-7")
+                case "google":
+                @components.LogoGemini("size-7")
+                case "deepseek":
+                @components.LogoDeepSeek("size-7")
+                default:
+                @components.LogoGPT("size-7")
+            }
            </div>
            <!--Badges -->
            <div class="absolute bottom-5">
@@ -480,90 +555,20 @@ templ Models() {
 </label>
 <ul tabindex="-1" class="list shadow-md min-w-[45vw] max-h-96 overflow-y-scroll
 space-y-2 px-1">
-    <li class="pb-2 pt-4 text-xs opacity-60 tracking-wide">OpenAI</li>
-
-    <ul class="grid grid-cols-1 sm:grid-cols-3 gap-2 mx-auto">
-    for i := 0; i < 6; i++ {
-    @ModelCard(ModelCardData{
-        id: "235d",
-        color: ColorSecondary,
-        name: "GPT-4o",
-        logo: components.LogoGPT("size-7"),
-        badges: []templ.Component{
-            Badge(BadgeData{
-                text: "Vision", 
-                icon: components.IconEye("size-4"), 
-                }),
-            Badge(BadgeData{
-                text: "Reasoning", 
-                icon: components.IconBrain("size-4"), 
-                }),
-            Badge(BadgeData{
-                text: "File Input", 
-                icon: components.IconFileInput("size-4"), 
-                }),
-        },
-    })
+    for company, models := range GetModelsMap(ctx) {
+        <li class="pb-2 pt-4 text-xs opacity-60 tracking-wide capitalize">{company}</li>
+        
+            <ul class="grid grid-cols-1 sm:grid-cols-3 gap-2 mx-auto">
+            for _, model := range models {
+                @ModelCard(ModelCardData{
+                id: model.ID,
+                company: company,
+                color: ColorSecondary,
+                name: model.Name ,
+                })
+            }
+            </ul>
     }
-    </ul>
-
-
-    <li class="pb-2 pt-4 text-xs opacity-60 tracking-wide">Anthropic</li>
-
-    <ul class="grid grid-cols-1 sm:grid-cols-3 gap-2 mx-auto">
-    for i := 0; i < 3; i++ {
-    @ModelCard(ModelCardData{
-        id: "235d",
-        color: ColorPrimary,
-        name: "Claude Sonnet 4",
-        logo: components.LogoClaude("size-7"),
-        badges: []templ.Component{
-            Badge(BadgeData{
-                text: "Vision", 
-                icon: components.IconEye("size-4"), 
-                }),
-            Badge(BadgeData{
-                text: "Reasoning", 
-                icon: components.IconBrain("size-4"), 
-                }),
-            Badge(BadgeData{
-                text: "File Input", 
-                icon: components.IconFileInput("size-4"), 
-                }),
-        },
-    })
-    }
-    </ul>
-
-    <li class="pb-2 pt-4 text-xs opacity-60 tracking-wide">Google</li>
-
-    <ul class="grid grid-cols-1 sm:grid-cols-3 gap-2 mx-auto">
-    for i := 0; i < 3; i++ {
-    @ModelCard(ModelCardData{
-        id: "235d",
-        color: ColorAccent,
-        name: "Gemini 2.5 Pro",
-        logo: components.LogoGemini("size-7"),
-        badges: []templ.Component{
-            Badge(BadgeData{
-                text: "Vision", 
-                icon: components.IconEye("size-4"), 
-                }),
-            Badge(BadgeData{
-                text: "Reasoning", 
-                icon: components.IconBrain("size-4"), 
-                }),
-            Badge(BadgeData{
-                text: "File Input", 
-                icon: components.IconFileInput("size-4"), 
-                }),
-        },
-    })
-    }
-    </ul>
-
-
-
 </ul>
 
 }
@@ -616,7 +621,7 @@ templ ActionBar() {
 templ PromptBar() {
 <section 
 data-class="{ 'opacity-100' : true }"
-class="fixed z-50 bottom-0 start-0 flex gap-2 sm:gap-3 items-center justify-center w-full 
+class="fixed z-10 bottom-0 start-0 flex gap-2 sm:gap-3 items-center justify-center w-full 
     bg-base-100/0 backdrop-blur p-4 sm:p-6 shadow-md shadow-base-content
     transition-all duration-500 opacity-0
     ">
@@ -643,15 +648,31 @@ class="fixed z-50 bottom-0 start-0 flex gap-2 sm:gap-3 items-center justify-cent
     </div>
     <!-- Prompt -->
         <textarea 
+        id="prompt"
         tabindex="1"
         data-on-input="
         evt.target.style.height = 0 + 'px'; 
-        evt.target.style.height =  evt.target.scrollHeight + 'px';"
+        evt.target.style.height =  evt.target.scrollHeight + 'px';
+        $prompt = evt.target.value;
+        "
+        data-on-keydown__window="
+            evt.key === 'Enter' && evt.metaKey && $prompt !== '' && 
+            ($chat = [...$chat, { role: 'user', content: [{ type: 'text', text: $prompt }] }], @post('/chat'), $prompt = '', 
+            document.getElementById('prompt').value = '');
+        "
+
+
         class="textarea  resize-none min-w-40 sm:min-w-72 w-full max-h-52 min-h-10 h-10
         max-w-lg"  placeholder="Type here"></textarea>
     <!-- Send Prompt -->
     <div class="tooltip tooltip-sm tooltip-primary" data-tip="Send Prompt">
-        <button class="btn btn-primary btn-circle">
+        <button 
+
+        data-attr-disabled="$prompt === ''"
+    
+        data-on-click="
+        $chat = [...$chat, { role: 'user', content: [{ type: 'text', text: $prompt }] }]
+        ;@post('/chat'); $prompt = '';document.getElementById('prompt').value = ''" class="btn btn-primary btn-circle">
             @components.IconArrowUp("size-5")
         </button>
     </div>
