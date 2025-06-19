@@ -18,6 +18,7 @@ func main() {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("GET /sse", handlers.SSEHub)
+	mux.HandleFunc("GET /chat/new", handlers.GETNewChat)
 	mux.HandleFunc("POST /chat", handlers.POSTChat)
 
 	mux.HandleFunc("GET /login", handlers.GETLogin())

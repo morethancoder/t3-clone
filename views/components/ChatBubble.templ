@@ -45,7 +45,7 @@ templ ChatBubble(data ChatBubbleData) {
 			<div class="chat-header">
 				<span>{ data.Model }</span>
 			</div>
-			<div class="chat-bubble">
+			<div class="chat-bubble prose">
 				Typing...
 			</div>
 		</div>
@@ -68,7 +68,7 @@ templ ChatBubble(data ChatBubbleData) {
 			<div class="chat-header">
 				<span>{ data.Model }</span>
 			</div>
-			<div class="chat-bubble">
+			<div class="chat-bubble prose">
 				{ data.Text }
 			</div>
 		</div>
@@ -78,13 +78,13 @@ templ ChatBubble(data ChatBubbleData) {
 				<span>You</span>
 				<time class="text-xs opacity-50">{ data.Timestamp }</time>
 			</div>
-			<div class="chat-bubble chat-bubble-primary">
+			<div class="chat-bubble chat-bubble-primary prose">
 				{ data.Text }
 			</div>
 		</div>
 	} else {
 		<div class="chat chat-start">
-			<div class="chat-image avatar">
+			<div data-scroll-into-view class="chat-image avatar">
 				switch strings.ToLower(data.Company) {
 					case "google":
 						@LogoGemini("size-7 text-accent animate-pulse glow")
@@ -103,8 +103,8 @@ templ ChatBubble(data ChatBubbleData) {
 				<time class="text-xs opacity-50">{ data.Timestamp }</time>
 			</div>
 			<div
-				class={"chat-bubble " + data.ID}
-				data-on-load={ fmt.Sprintf("document.getElementsByClassName('chat-bubble %s')[0].innerHTML=`%s`", data.ID, data.Text) }
+				class={ "prose chat-bubble " + data.ID }
+				data-on-load={ fmt.Sprintf(" document.getElementsByClassName('chat-bubble %s')[0].innerHTML=`%s`", data.ID, data.Text) }
 			>
 				{ data.Text }
 			</div>

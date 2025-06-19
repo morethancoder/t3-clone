@@ -58,3 +58,41 @@ Once the setup is complete, everything should work as expected. Start your Pocke
 ---
 
 Enjoy building with **Gunter**! 🎉
+
+
+## Docker
+
+### How to Use
+1. Build the Docker Image
+```bash
+cd /path/to/your/t3-clone
+docker build -t morethancoder/t3-clone .
+```
+2. Run with Default Settings
+```bash
+docker run -p 8080:8080 -p 8090:8090 morethancoder/t3-clone
+```
+3. Run with Custom Environment Variables
+```bash
+docker run -p 8080:8080 -p 8090:8090   -e OPENROUTER_API_KEY=your_actual_api_key   -e ENV=production   morethancoder/t3-clone
+```
+4. Run with Persistent Database
+```bash
+docker run -p 8080:8080 -p 8090:8090   -v $(pwd)/pb_data:/root/pb_data   -e OPENROUTER_API_KEY=your_actual_api_key   morethancoder/t3-clone
+```
+5. Run in Background (Detached Mode)
+```bash
+docker run -d -p 8080:8080 -p 8090:8090   --name t3-clone-app   -e OPENROUTER_API_KEY=your_actual_api_key   morethancoder/t3-clone
+```
+
+#### Access Your Application
+```
+
+Main app: http://localhost:8080
+Database server: http://localhost:8090
+```
+#### Stop the Container
+```bash
+docker stop t3-clone-app
+docker rm t3-clone-app
+```

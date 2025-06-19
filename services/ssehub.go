@@ -1,7 +1,6 @@
 package services
 
 import (
-	"morethancoder/t3-clone/utils"
 	"sync"
 
 	"github.com/a-h/templ"
@@ -26,8 +25,6 @@ func (hub *SSEHub) Add(userId string, sse *datastar.ServerSentEventGenerator) {
 	hub.mutex.Lock()
 	defer hub.mutex.Unlock()
 	hub.clients[userId] = append(hub.clients[userId], sse)
-
-	utils.Log.Debug("added sse to: %s", userId)
 }
 
 func (hub *SSEHub) Remove(userId string, sse *datastar.ServerSentEventGenerator) {
@@ -40,7 +37,6 @@ func (hub *SSEHub) Remove(userId string, sse *datastar.ServerSentEventGenerator)
 		}
 	}
 
-	utils.Log.Debug("removed sse from: %s", userId)
 }
 
 func (hub *SSEHub) BroadcastFragments(userId string, component templ.Component) {
@@ -51,7 +47,6 @@ func (hub *SSEHub) BroadcastFragments(userId string, component templ.Component) 
 		sse.MergeFragmentTempl(component)
 	}
 
-	utils.Log.Debug("broadcasted fragments to: %s", userId)
 }
 
 func (hub *SSEHub) BroadcastSignals(userId string, signals []byte) {
@@ -62,5 +57,13 @@ func (hub *SSEHub) BroadcastSignals(userId string, signals []byte) {
 		sse.MergeSignals(signals)
 	}
 
-	utils.Log.Debug("broadcasted signals to: %s", userId)
+}
+
+func (hub *SSEHub) ExcuteScript(userId string, script string) {
+	hub.mutex.Lock()
+	defer hub.mutex.Unlock()
+
+	for _, sse := range hub.clients[userId] {
+		sse.ExecuteScript(script)
+	}
 }

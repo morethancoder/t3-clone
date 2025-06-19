@@ -8,6 +8,10 @@ css:
 	./tailwindcss -i static/css/input.css -o static/css/styles.css --minify --watch
 
 
+db:
+	go run ./cmd/db-server/main.go serve
 
-.PHONY: run, css 
+
+
+.PHONY: run, css, db
 

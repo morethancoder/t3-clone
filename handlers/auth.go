@@ -15,14 +15,7 @@ import (
 
 func GETAuthRedirect() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		_, err := r.Cookie("jwt")
-		if err == nil {
-			utils.Log.Info("Already authenticated")
-			http.Redirect(w, r, "/", http.StatusMovedPermanently)
-			return
-		}
-
-		err = layouts.MainLayout(pages.AuthRedirect("Authenticating...")).Render(r.Context(), w)
+		err := layouts.MainLayout(pages.AuthRedirect("Authenticating...")).Render(r.Context(), w)
 		if err != nil {
 			utils.Log.Error(err.Error())
 			http.Error(w, "Something went wrong", http.StatusInternalServerError)
@@ -33,11 +26,19 @@ func GETAuthRedirect() http.HandlerFunc {
 
 func POSTAuthRedirect() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		_, err := r.Cookie("jwt")
+		if err == nil {
+			utils.Log.Info("Already authenticated")
+		sse := datastar.NewSSE(w, r)
+			sse.ExecuteScript("window.location.href = '/'")
+			return
+		}
 		//get user session
 		cookie, err := r.Cookie(KeySessionID)
 		if err != nil {
 			utils.Log.Error(err.Error())
-			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		sse := datastar.NewSSE(w, r)
+			sse.ExecuteScript("window.location.href = '/login'")
 			return
 		}
 
@@ -52,7 +53,8 @@ func POSTAuthRedirect() http.HandlerFunc {
 		ok := session.Load()
 		if !ok {
 			utils.Log.Error("Session not found")
-			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		sse := datastar.NewSSE(w, r)
+			sse.ExecuteScript("window.location.href = '/login'")
 			return
 		}
 
@@ -60,7 +62,8 @@ func POSTAuthRedirect() http.HandlerFunc {
 		authProviders, ok := session.Data[KeyOAuth2Providers].([]db.OAuth2Provider)
 		if !ok {
 			utils.Log.Error("Auth providers not found")
-			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		sse := datastar.NewSSE(w, r)
+			sse.ExecuteScript("window.location.href = '/login'")
 			return
 		}
 
@@ -77,8 +80,9 @@ func POSTAuthRedirect() http.HandlerFunc {
 				}, map[db.QueryParam]string{})
 
 				if err != nil {
-					utils.Log.Error(err.Error())
-					http.Error(w, "Something went wrong", http.StatusInternalServerError)
+					utils.Log.Error("Failed to auth with %s: %s", provider.Name, err.Error())
+		sse := datastar.NewSSE(w, r)
+					sse.ExecuteScript("window.location.href = '/login'")
 					return
 				}
 
@@ -95,19 +99,25 @@ func POSTAuthRedirect() http.HandlerFunc {
 					jwtCookie.Secure = true
 				}
 
-				http.SetCookie(w, jwtCookie)
-
-
-				ctx := context.WithValue(r.Context(), "AuthRecord", res.Record)
-				r = r.WithContext(ctx)
-
-				//redirect to home
-				sse := datastar.NewSSE(w, r)
-
-				err = sse.MergeFragmentTempl(pages.HomePage())
+				modelrecords, err := db.Db.GetModelRecords(map[db.QueryParam]string{})
 				if err != nil {
 					utils.Log.Error(err.Error())
-					http.Error(w, "Something went wrong", http.StatusInternalServerError)
+					http.Error(w, "Failed to get models", http.StatusInternalServerError)
+					return
+				}
+
+				ctx := context.WithValue(r.Context(), "AuthRecord", res.Record)
+				ctx = context.WithValue(ctx, "Models", db.GroupModelRecordsByCompany(modelrecords.Items))
+				r = r.WithContext(ctx)
+
+				http.SetCookie(w, jwtCookie)
+
+				sse := datastar.NewSSE(w, r)
+				//redirect to home
+				err = sse.MergeFragmentTempl(pages.HomePage())
+				if err != nil {
+					utils.Log.Debug("Failed to merge fragment: %s", err.Error())
+					sse.ExecuteScript("window.location.href = '/'")
 				}
 				return
 
@@ -115,7 +125,8 @@ func POSTAuthRedirect() http.HandlerFunc {
 		}
 
 		utils.Log.Error("State not found")
-		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		sse := datastar.NewSSE(w, r)
+		sse.ExecuteScript("window.location.href = '/login'")
 		//maybe render an update in the frontend
 		return
 	}

@@ -19,7 +19,11 @@ func GetAuthRecord(ctx context.Context) db.AuthRecord {
 func GetModelsMap(ctx context.Context) map[string][]db.ModelRecord {
    data, ok := ctx.Value("Models").(map[string][]db.ModelRecord) 
     if !ok {
-        return map[string][]db.ModelRecord{}
+        return map[string][]db.ModelRecord{
+            "google": []db.ModelRecord{
+                {ID: "gpt-3.5-turbo", Name: "GPT-3.5-turbo"},
+            },
+        }
     } 
     return data
 }
@@ -33,8 +37,7 @@ data-signals-chat="[]"
 data-on-load="@get('/sse')"
 >
     <div class="h-full w-full min-h-screen ">
-        <span class="fixed top-10 right-1/2 translate-x-1/2 
-        badge badge-sm badge-outline badge-info" data-text="$model"></span>
+
         @HistoryBar()
         @ActionBar()
         @PromptBar()
@@ -44,7 +47,7 @@ data-on-load="@get('/sse')"
 }
 
 templ MainSection(content templ.Component) {
-<section class="flex flex-col gap-4 w-full mx-auto max-w-4xl 
+<section class="flex flex-col gap-4 w-full mx-auto max-w-5xl 
     items-center justify-end h-full min-h-screen px-8 sm:px-16 pb-32 ">
     <div id="chat">
         @content
@@ -58,34 +61,46 @@ data-class="{ 'opacity-100' : true }"
 class="w-full opacity-0 transition-all duration-1000">
     <div class="chat chat-start mb-2">
         <div class="chat-image avatar">
-            @components.LogoGemini("size-8 text-accent animate-pulse glow")
+                    @components.LogoGemini("size-8 text-accent animate-pulse glow")
+
         </div>
-        <div data-signals_model-name-hover="false" class="chat-header p-1">
+        <div data-signals_model-name-click="false" class="chat-header p-1">
             <div class="dropdown transition-all duration-300"
-            data-on-mouseenter="$_modelNameHover=true"
-            data-on-mouseleave="$_modelNameHover=false"
-            data-class="{ 'dropdown-open' : $_modelNameHover }"
+            data-on-click="$_modelNameClick=!$_modelNameClick"
+            data-class="{ 'dropdown-open' : $_modelNameClick }"
             >
                 <div  class=" flex items-center justify-between 
                         cursor-pointer m-1 gap-1">
-                    Gemini 2.5 Pro
+        <span class="text-sm" data-text="$model"></span>
                     @components.IconChevronDown("size-4")
                 </div>
-                <ul tabindex="5" class="dropdown-content menu bg-base-100 rounded-xl
-                        border border-base-300
-                        z-1 w-52 p-2 shadow-sm">
-                    <li>
-                        <a>
-                            @components.LogoGemini("size-4")
-                            Gemini 2.5 Flash
-                        </a>
-                    </li>
-                    <li>
-                        <a>
-                            @components.LogoGPT("size-4")
-                            ChatGPT 4o
-                        </a>
-                    </li>
+                <ul tabindex="5" class="dropdown-content bg-base-100 rounded-xl
+                        border border-base-300 max-h-72 overflow-y-scroll
+                        z-1 w-56 p-2 shadow-sm">
+                        for company, models := range GetModelsMap(ctx) {
+                            for _, model := range models {
+                                <li
+                                class="
+                                text-sm
+                                hover:bg-accent hover:text-accent-content
+                                flex items-center gap-2 justify-between cursor-pointer p-2 rounded-full"
+                                data-on-click={ fmt.Sprintf("$model = '%s'; document.activeElement.blur()", model.Name) }>
+                                    <span>{ strings.ReplaceAll(strings.Split(model.Name, "/")[1], "-", " ") }</span>
+                                    switch company {
+                                        case "openai":
+                                        @components.LogoGPT("size-4")
+                                        case "anthropic":
+                                        @components.LogoClaude("size-4")
+                                        case "google":
+                                        @components.LogoGemini("size-4")
+                                        case "deepseek":
+                                        @components.LogoDeepSeek("size-4")
+                                        default:
+                                        @components.LogoGPT("size-4")
+                                    }
+                                </li>
+                            }
+                        }
                 </ul>
             </div>
         </div>
@@ -134,7 +149,9 @@ class="w-full opacity-0 transition-all duration-1000">
 }
 
 templ StarterCard(icon templ.Component, text string) {
-<div class="card w-full min-h-40 bg-base-300 card-lg shadow-sm cursor-pointer
+<div
+data-on-click={fmt.Sprintf("$prompt = '%s'; $chat = [{ role: 'user', content: [{ type: 'text', text: $prompt }] }]; @post('/chat'); document.getElementById('prompt').value = ''; $prompt = '';", text)}
+class="card w-full min-h-40 bg-base-300 card-lg shadow-sm cursor-pointer
     hover:bg-accent hover:text-accent-content hover:transform hover:-translate-y-1 transition-all duration-300">
     <div class="card-body gap-4">
         @icon
@@ -158,7 +175,7 @@ items-start justify-start h-full gap-4
 p-4
     ">
     <div class="tooltip tooltip-right tooltip-sm" data-tip="New Chat">
-        <button class="btn btn-neutral btn-circle">
+        <button data-on-click="$chat= []; $prompt= ''; @get('/chat/new')" class="btn btn-neutral btn-circle">
             @components.IconSquarePen("size-5")
         </button>
     </div>
@@ -257,7 +274,7 @@ type SlideCardData struct {
 templ SlideCard(data SlideCardData) {
 <div  
 data-signals={ fmt.Sprintf("{_%[1]sClick: false, _%[1]sHover: false}", data.id) } 
-data-on-click={ fmt.Sprintf("$_%[1]sClick= true", data.id) }
+data-on-click={ fmt.Sprintf("$_%[1]sClick= !$_%[1]sClick", data.id) }
 data-on-click__outside={
     fmt.Sprintf("$_%sClick=false", data.id) } class="relative">
     <div 
@@ -658,7 +675,7 @@ class="fixed z-10 bottom-0 start-0 flex gap-2 sm:gap-3 items-center justify-cent
         data-on-keydown__window="
             evt.key === 'Enter' && evt.metaKey && $prompt !== '' && 
             ($chat = [...$chat, { role: 'user', content: [{ type: 'text', text: $prompt }] }], @post('/chat'), $prompt = '', 
-            document.getElementById('prompt').value = '');
+            document.getElementById('prompt').value = '', document.getElementById('prompt').style.height = 0 + 'px');
         "
 
 
@@ -672,7 +689,7 @@ class="fixed z-10 bottom-0 start-0 flex gap-2 sm:gap-3 items-center justify-cent
     
         data-on-click="
         $chat = [...$chat, { role: 'user', content: [{ type: 'text', text: $prompt }] }]
-        ;@post('/chat'); $prompt = '';document.getElementById('prompt').value = ''" class="btn btn-primary btn-circle">
+        ;@post('/chat'); $prompt = '';document.getElementById('prompt').value = ''; document.getElementById('prompt').style.height = 0 + 'px';" class="btn btn-primary btn-circle">
             @components.IconArrowUp("size-5")
         </button>
     </div>

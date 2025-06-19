@@ -2,6 +2,8 @@ package handlers
 
 import (
 	"bytes"
+	"encoding/json"
+	"fmt"
 	"morethancoder/t3-clone/db"
 	"morethancoder/t3-clone/services"
 	"morethancoder/t3-clone/utils"
@@ -31,6 +33,29 @@ func randomString() string {
 	return uuid.NewString()
 }
 
+func GETNewChat(w http.ResponseWriter, r *http.Request) {
+	jwtCookie, err := r.Cookie("jwt")
+	if err != nil {
+		utils.Log.Error("No jwt cookie found")
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		return
+	}
+
+	authRefreshResponse, err := db.Db.AuthRefresh(jwtCookie.Value)
+	if err != nil {
+		utils.Log.Error(err.Error())
+		http.SetCookie(w, &http.Cookie{
+			Name:     "jwt",
+			MaxAge:   -1,
+			HttpOnly: true,
+		})
+		http.Error(w, "Failed to auth refresh", http.StatusUnauthorized)
+		return
+	}
+	services.UserSSEHub.ExcuteScript(authRefreshResponse.Record.ID, "window.location.reload()")
+	return
+}
+
 func POSTChat(w http.ResponseWriter, r *http.Request) {
 	jwtCookie, err := r.Cookie("jwt")
 	if err != nil {
@@ -58,8 +83,6 @@ func POSTChat(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.Log.Debug("userData %+v", userData)
-
 	var chatBubbles []templ.Component
 	var msgs []services.Message
 
@@ -71,6 +94,7 @@ func POSTChat(w http.ResponseWriter, r *http.Request) {
 			Type:      chat.Content[0].Type,
 			Text:      chat.Content[0].Text,
 			Timestamp: time.Now().Format("3:04 PM"),
+			Model:     userData.Model,
 		}))
 		msgs = append(msgs, services.Message{
 			Role:    chat.Role,
@@ -80,6 +104,7 @@ func POSTChat(w http.ResponseWriter, r *http.Request) {
 
 	chatBubbles = append(chatBubbles, components.ChatBubble(components.ChatBubbleData{
 		ID:      randomString(),
+		Model:   userData.Model,
 		Role:    "loading",
 		Company: strings.Split(userData.Model, "/")[0],
 	}))
@@ -104,6 +129,8 @@ func POSTChat(w http.ResponseWriter, r *http.Request) {
 			Role:      "assistant",
 			Type:      "text",
 			Text:      err.Error(),
+			Company:   strings.Split(userData.Model, "/")[0],
+			Model:     userData.Model,
 			Timestamp: time.Now().Format("3:04 PM"),
 		}))
 
@@ -129,22 +156,38 @@ func POSTChat(w http.ResponseWriter, r *http.Request) {
 			Text:      buf.String(),
 			Company:   res.Provider,
 			Timestamp: time.Now().Format("3:04 PM"),
+			Model:     userData.Model,
 		}))
+		//update userdata chat
+		userData.Chat = append(userData.Chat, struct {
+			Content []struct {
+				Text string "json:\"text\""
+				Type string "json:\"type\""
+			} "json:\"content\""
+			Role string "json:\"role\""
+		}{
+			Role: "Assistance",
+			Content: []struct {
+				Text string "json:\"text\""
+				Type string "json:\"type\""
+			}{
+				{
+					Text: buf.String(),
+					Type: choice.Message.Role,
+				},
+			},
+		})
 	}
+
+	updatedChat, err := json.Marshal(userData.Chat)
+	if err != nil {
+		utils.Log.Error(err.Error())
+		return
+	}
+	services.UserSSEHub.BroadcastSignals(authRefreshResponse.Record.ID, []byte(fmt.Sprintf(`{ chat : %s }`, string(updatedChat))))
 
 	services.UserSSEHub.BroadcastFragments(authRefreshResponse.Record.ID,
 		components.Chat(chatBubbles),
 	)
-
-	// err = services.OpenRouter.RequestStream(req, func(data []byte) {
-	// 	services.UserSSEHub.BroadcastFragments(authRefreshResponse.Record.ID,
-	// 		components.ChatBubble(components.ChatBubbleData{
-	// 			Role:      "assistant",
-	// 			Type:      "text",
-	// 			Text:      string(data),
-	// 			Timestamp: time.Now().Format("3:04 PM"),
-	// 		}),
-	// 	)
-	// })
-
+	return
 }
